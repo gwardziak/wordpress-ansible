@@ -1,0 +1,26 @@
+---
+     - name: "download wordpress"
+       get_url:
+          url: https://wordpress.org/latest.zip
+          dest: /tmp/wordpress.zip
+     - name: "unarchive wordpress"
+       unarchive:
+          src: /tmp/wordpress.zip
+          dest: /var/www
+          remote_src: yes
+     - name: "create new db"
+       mysql_db:
+           name: hello_db
+           state: present
+     - name: "put apache conf"
+       template: 
+           src: templates/blog.conf
+           dest: /etc/httpd/conf.d/blog.conf
+     - name: "start http service"
+       service:
+         name: httpd
+         state: restarted     
+     - name: "put wp_config"
+       copy:
+           src: templates/wp-config.php
+           dest: "{{wordpress_path}}/wp-config.php"
