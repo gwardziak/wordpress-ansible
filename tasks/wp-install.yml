@@ -10,8 +10,13 @@
           remote_src: yes
      - name: "create new db"
        mysql_db:
-           name: hello_db
+           name: "{{dataBaseName}}"
            state: present
+     - name: "create db user"
+       mysql_user:
+            name: "{{dataBasesUser}}"
+            password: 
+            priv: '*.*:ALL'
      - name: "put apache conf"
        template: 
            src: templates/blog.conf
@@ -24,3 +29,13 @@
        copy:
            src: templates/wp-config.php
            dest: "{{wordpress_path}}/wp-config.php"
+     - name: Update WordPress config file
+       lineinfile:
+           dest="{{wordpress_path}}/wp-config.php"
+           regexp="{{ item.regexp }}"
+           line="{{ item.line }}"
+       with_items:
+           - {'regexp': "define\\('DB_NAME', '(.)+'\\);", 'line': "define('DB_NAME', '{{dataBaseName}}');"}        
+           - {'regexp': "define\\('DB_USER', '(.)+'\\);", 'line': "define('DB_USER', '{{dataBasesUser}}');"}        
+  
+

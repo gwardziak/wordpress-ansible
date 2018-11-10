@@ -3,6 +3,8 @@
   become: yes
   vars:
      wordpress_path: /var/www/wordpress
+     dataBaseName: hello_db
+     dataBasesUser: "user_{{dataBaseName}}"
   tasks:
      - include_tasks: tasks/os-dependencies.yml
      - include_tasks: tasks/wp-install.yml
